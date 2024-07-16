@@ -5,6 +5,7 @@ from av import VideoFrame
 
 relay = MediaRelay()
 
+
 class VideoTransformTrack(MediaStreamTrack):
     kind = "video"
 
@@ -13,11 +14,10 @@ class VideoTransformTrack(MediaStreamTrack):
         self.track = track
         self.transform = transform
 
-    async def recv(self):
-        frame = await self.track.recv()
+    def process_frame(self, frame):
+        img = frame.to_ndarray(format="bgr24")
 
         if self.transform == "cartoon":
-            img = frame.to_ndarray(format="bgr24")
             img_color = cv2.pyrDown(cv2.pyrDown(img))
             for _ in range(6):
                 img_color = cv2.bilateralFilter(img_color, 9, 9, 7)
@@ -33,25 +33,24 @@ class VideoTransformTrack(MediaStreamTrack):
             )
             img_edges = cv2.cvtColor(img_edges, cv2.COLOR_GRAY2RGB)
             img = cv2.bitwise_and(img_color, img_edges)
-            new_frame = VideoFrame.from_ndarray(img, format="bgr24")
-            new_frame.pts = frame.pts
-            new_frame.time_base = frame.time_base
-            return new_frame
         elif self.transform == "edges":
-            img = frame.to_ndarray(format="bgr24")
             img = cv2.cvtColor(cv2.Canny(img, 100, 200), cv2.COLOR_GRAY2BGR)
-            new_frame = VideoFrame.from_ndarray(img, format="bgr24")
-            new_frame.pts = frame.pts
-            new_frame.time_base = frame.time_base
-            return new_frame
         elif self.transform == "rotate":
-            img = frame.to_ndarray(format="bgr24")
             rows, cols, _ = img.shape
             M = cv2.getRotationMatrix2D((cols / 2, rows / 2), frame.time * 45, 1)
             img = cv2.warpAffine(img, M, (cols, rows))
-            new_frame = VideoFrame.from_ndarray(img, format="bgr24")
-            new_frame.pts = frame.pts
-            new_frame.time_base = frame.time_base
-            return new_frame
-        else:
-            return frame
+
+        new_frame = VideoFrame.from_ndarray(img, format="bgr24")
+        new_frame.pts = frame.pts
+        new_frame.time_base = frame.time_base
+        return new_frame
+
+    async def recv(self):
+        frame = await self.track.recv()
+        frame = self.process_frame(frame)
+
+        # Convert VideoFrame to numpy array and save the image
+        img = frame.to_ndarray(format="bgr24")
+        cv2.imwrite(f"media/image{frame.time_base}.jpg", img)
+
+        return frame
