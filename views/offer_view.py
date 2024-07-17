@@ -48,7 +48,9 @@ async def offer(request):
         elif track.kind == "video":
             pc.addTrack(
                 VideoTransformTrack(
-                    relay.subscribe(track), transform=params["video_transform"]
+                    relay.subscribe(track),
+                    transform=params["video_transform"],
+                    create_dataset=params["create_dataset"]
                 )
             )
             if params.get("record_to"):
