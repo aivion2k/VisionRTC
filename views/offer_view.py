@@ -8,6 +8,7 @@ from media.media_blackhole import CustomMediaBlackhole as MediaBlackhole
 from processing.video_transform import VideoTransformTrack, relay
 from utils.helpers import pcs, logger
 
+
 async def offer(request):
     params = await request.json()
     offer = RTCSessionDescription(sdp=params["sdp"], type=params["type"])
@@ -63,7 +64,6 @@ async def offer(request):
 
     await pc.setRemoteDescription(offer)
     await recorder.start()
-
     answer = await pc.createAnswer()
     await pc.setLocalDescription(answer)
 

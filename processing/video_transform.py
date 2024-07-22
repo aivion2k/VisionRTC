@@ -1,4 +1,3 @@
-import cv2
 from aiortc import MediaStreamTrack
 from aiortc.contrib.media import MediaRelay
 from av import VideoFrame
@@ -18,6 +17,10 @@ class VideoTransformTrack(MediaStreamTrack):
         self.create_dataset = create_dataset
         self.dataset_recorder = DatasetRecorder("dataset")
         self.processor = ImageProcessor()
+
+        """
+        Register your image processing methods/models below
+        """
         self.processor.register_method("cartoon", cartoon_method)
 
     def prepare_img(self, frame):
@@ -34,11 +37,13 @@ class VideoTransformTrack(MediaStreamTrack):
 
     async def recv(self):
         frame = await self.track.recv()
+        if self.method == "none":
+            return frame
+
         img = self.prepare_img(frame)
         img = self.process_frame(img)
         frame = self.prepare_frame(img, frame)
 
-        # Convert VideoFrame to numpy array and save the image
         if self.create_dataset:
             label = "bbox: (0, 0, 100, 100)"  # Placeholder for actual label generation
             self.dataset_recorder.save_frame(img, label)
