@@ -1,8 +1,12 @@
 import cv2
-import numpy as np
 
 
 class ImageProcessor:
+    """
+    The ImageProcessor class manages and applies various image processing methods and deep learning models.
+    It allows for registration of custom methods and models, and provides functionality to apply them to images.
+    """
+
     def __init__(self):
         self.methods = {}
         self.models = {}

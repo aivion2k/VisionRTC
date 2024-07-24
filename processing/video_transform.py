@@ -8,14 +8,23 @@ relay = MediaRelay()
 
 
 class VideoTransformTrack(MediaStreamTrack):
+    """
+    The VideoTransformTrack class extends MediaStreamTrack to apply transformations to video frames and optionally save them as a dataset.
+
+    :param track: The original media track to transform.
+    :param transform: The name of the transformation method to apply.
+    :param if_create_dataset: A boolean indicating whether to create a dataset by saving frames.
+    :param save_interval_ms: Time interval in milliseconds for saving frames to the dataset.
+    """
+
     kind = "video"
 
-    def __init__(self, track, transform, create_dataset):
+    def __init__(self, track, transform, if_create_dataset, save_interval_ms=1000):
         super().__init__()
         self.track = track
         self.method = transform
-        self.create_dataset = create_dataset
-        self.dataset_recorder = DatasetRecorder("dataset")
+        self.create_dataset = if_create_dataset
+        self.dataset_recorder = DatasetRecorder("dataset", save_interval_ms)
         self.processor = ImageProcessor()
 
         """
@@ -24,18 +33,42 @@ class VideoTransformTrack(MediaStreamTrack):
         self.processor.register_method("cartoon", cartoon_method)
 
     def prepare_img(self, frame):
+        """
+        Convert a video frame to a NumPy array.
+
+        :param frame: The input video frame.
+        :return: The frame as a NumPy array in BGR format.
+        """
         return frame.to_ndarray(format="bgr24")
 
     def prepare_frame(self, img, frame):
+        """
+        Convert a NumPy array back to a video frame.
+
+        :param img: The processed image as a NumPy array.
+        :param frame: The original video frame.
+        :return: A new VideoFrame with the processed image data.
+        """
         new_frame = VideoFrame.from_ndarray(img, format="bgr24")
         new_frame.pts = frame.pts
         new_frame.time_base = frame.time_base
         return new_frame
 
     def process_frame(self, img):
+        """
+        Apply the registered transformation method to an image.
+
+        :param img: The input image as a NumPy array.
+        :return: The processed image.
+        """
         return self.processor.apply_method(img, self.method)
 
     async def recv(self):
+        """
+        Receive a video frame, apply the transformation, optionally save it, and return the processed frame.
+
+        :return: The transformed video frame.
+        """
         frame = await self.track.recv()
         if self.method == "none":
             return frame
