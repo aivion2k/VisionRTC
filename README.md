@@ -1,6 +1,6 @@
 # VisionRTC - All-in-One Tool for Computer Vision
 
-VisionRTC is an advanced server-side inference tool designed for testing and implementing computer vision solutions effortlessly. This robust platform allows you to implement and test computer vision methods and models on the server side, eliminating the need for any client-side implementation.
+VisionRTC is an advanced server-side inference tool designed for testing and implementing computer vision solutions effortlessly. This platform allows you to implement and test computer vision methods and models on the server side, eliminating the need for any client-side implementation.
 
 ## Features
 
@@ -37,6 +37,11 @@ After generating the keys, you can start VisionRTC by accessing the following li
 https://127.0.0.1:8080/
 ```
 
+or you can use different device and connect to:
+```
+https://your_server_ip_address:8080/
+```
+
 ## Installation
 
 1. Clone the repository:
@@ -58,7 +63,7 @@ python app.py
 
 
 ## Configuration
-Access the web interface via your browser to configure VisionRTC. Navigate to **https://127.0.0.1:8080/** and use the UI to choose the camera, resolution and desired method. JSON configuration will be supported soon for advanced users.
+Access the web interface via your browser to configure VisionRTC. Navigate to **https://127.0.0.1:8080/** and use the UI to choose the camera source, resolution and desired method. JSON configuration will be supported soon for advanced users.
 
 ## License
 This project is licensed under the MIT License. See the LICENSE file for more details.
