@@ -30,14 +30,14 @@ class DatasetRecorder:
         current_time = datetime.now()
 
         # Check if the required time interval has passed since the last save
-        if self.last_save_time is None or (
-                current_time - self.last_save_time).total_seconds() * 1000 >= self.save_interval_ms:
+        if self.last_save_time is None or (current_time - self.last_save_time).total_seconds() * 1000 >= self.save_interval_ms:
             self.frame_counter += 1
-            img_filename = os.path.join(self.output_dir, f"frame_{current_time}.jpg")
+            timestamp = current_time.strftime("%Y%m%d_%H%M%S")
+            img_filename = os.path.join(self.output_dir, f"frame_{timestamp}.jpg")
             cv2.imwrite(img_filename, img)
 
             if label:
-                label_filename = os.path.join(self.output_dir, f"frame_{current_time}.txt")
+                label_filename = os.path.join(self.output_dir, f"frame_{timestamp}.txt")
                 with open(label_filename, 'w') as label_file:
                     label_file.write(label)
 
