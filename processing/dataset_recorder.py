@@ -20,12 +20,12 @@ class DatasetRecorder:
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 
-    def save_frame(self, img, label=None):
+    def save_frame(self, img, labels=None):
         """
         Saves an image frame to the directory if the specified time interval has elapsed since the last save.
 
         :param img: The image to be saved.
-        :param label: Optional label to be saved along with the image.
+        :param labels: Optional list of labels to be saved along with the image.
         """
         current_time = datetime.now()
 
@@ -36,10 +36,10 @@ class DatasetRecorder:
             img_filename = os.path.join(self.output_dir, f"frame_{timestamp}.jpg")
             cv2.imwrite(img_filename, img)
 
-            if label:
+            if labels:
                 label_filename = os.path.join(self.output_dir, f"frame_{timestamp}.txt")
                 with open(label_filename, 'w') as label_file:
-                    label_file.write(label)
+                    for label in labels:
+                        label_file.write(f"{label}\n")
 
             self.last_save_time = current_time
-

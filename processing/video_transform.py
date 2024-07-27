@@ -2,14 +2,15 @@ from aiortc import MediaStreamTrack
 from aiortc.contrib.media import MediaRelay
 from av import VideoFrame
 from processing.dataset_recorder import DatasetRecorder
-from processing.image_processor import ImageProcessor, cartoon_method
+from processing.image_processor import ImageProcessor, detect_faces
 
 relay = MediaRelay()
 
 
 class VideoTransformTrack(MediaStreamTrack):
     """
-    The VideoTransformTrack class extends MediaStreamTrack to apply transformations to video frames and optionally save them as a dataset.
+    The VideoTransformTrack class extends MediaStreamTrack to apply transformations to video frames and optionally save
+    them as a dataset.
 
     :param track: The original media track to transform.
     :param transform: The name of the transformation method to apply.
@@ -30,7 +31,8 @@ class VideoTransformTrack(MediaStreamTrack):
         """
         Register your image processing methods/models below
         """
-        self.processor.register_method("cartoon", cartoon_method)
+
+        self.processor.register_method("detect-faces", detect_faces)
 
     def prepare_img(self, frame):
         """
@@ -59,9 +61,12 @@ class VideoTransformTrack(MediaStreamTrack):
         Apply the registered transformation method to an image.
 
         :param img: The input image as a NumPy array.
-        :return: The processed image.
+        :return: The processed image and any additional labels.
         """
-        return self.processor.apply_method(img, self.method)
+        result = self.processor.apply_method(img, self.method)
+        if isinstance(result, tuple):
+            return result
+        return result, None
 
     async def recv(self):
         """
@@ -74,11 +79,10 @@ class VideoTransformTrack(MediaStreamTrack):
             return frame
 
         img = self.prepare_img(frame)
-        img = self.process_frame(img)
-        frame = self.prepare_frame(img, frame)
+        processed_img, label = self.process_frame(img)
+        frame = self.prepare_frame(processed_img, frame)
 
         if self.create_dataset:
-            label = "bbox: (0, 0, 100, 100)"  # Placeholder for actual label generation
             self.dataset_recorder.save_frame(img, label)
 
         return frame

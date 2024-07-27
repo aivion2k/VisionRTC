@@ -51,46 +51,33 @@ class ImageProcessor:
             raise ValueError(f"Model {model_name} not registered.")
         return self.models[model_name].predict(img, **kwargs)
 
-    def prepare_label(self, img, method_name=None, model_name=None, **kwargs):
-        """
-        Prepare labels for the image using a processing method or a model.
-        :param img: The input image.
-        :param method_name: The name of the method to use for label preparation.
-        :param model_name: The name of the model to use for label preparation.
-        :param kwargs: Additional parameters for the method or model.
-        :return: The labels.
-        """
-        if method_name:
-            img = self.apply_method(img, method_name, **kwargs)
-        if model_name:
-            _, labels = self.apply_model(img, model_name, **kwargs)
-            return labels
-        return None
-
 
 # Example methods and model stubs
-def cartoon_method(img, **kwargs):
-    img_color = cv2.pyrDown(cv2.pyrDown(img))
-    for _ in range(6):
-        img_color = cv2.bilateralFilter(img_color, 9, 9, 7)
-    img_color = cv2.pyrUp(cv2.pyrUp(img_color))
-    img_edges = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    img_edges = cv2.adaptiveThreshold(
-        cv2.medianBlur(img_edges, 7),
-        255,
-        cv2.ADAPTIVE_THRESH_MEAN_C,
-        cv2.THRESH_BINARY,
-        9,
-        2,
+
+def detect_faces(img, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30), **kwargs):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+    faces = face_cascade.detectMultiScale(
+        gray,
+        scaleFactor=scaleFactor,
+        minNeighbors=minNeighbors,
+        minSize=minSize,
+        flags=cv2.CASCADE_SCALE_IMAGE
     )
-    img_edges = cv2.cvtColor(img_edges, cv2.COLOR_GRAY2RGB)
-    img = cv2.bitwise_and(img_color, img_edges)
-    return img
+
+    labels = []
+    for (x, y, w, h) in faces:
+        cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        labels.append(f"bbox: {x}, {y}, {w}, {h}")
+
+    return img, labels
 
 
 class DummyModel:
     def predict(self, img, **kwargs):
         # Placeholder for a deep learning model prediction
         height, width, _ = img.shape
-        labels = f"bbox: (0, 0, {width}, {height})"
+        labels = f"bbox: 0, 0, {width}, {height}"
         return img, labels
