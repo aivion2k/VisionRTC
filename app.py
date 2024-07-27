@@ -6,6 +6,7 @@ from aiohttp import web
 from views.index_view import index
 from views.javascript_view import javascript
 from views.offer_view import offer
+from views.config_view import get_config
 from utils.helpers import on_shutdown
 
 logger = logging.getLogger("pc")
@@ -42,6 +43,7 @@ if __name__ == "__main__":
     app.router.add_get("/", index)
     app.router.add_get("/client.js", javascript)
     app.router.add_post("/offer", offer)
+    app.router.add_get("/config", get_config)
     app.router.add_static('/static/', path=os.path.join(os.path.dirname(__file__), 'static'))
 
     web.run_app(
