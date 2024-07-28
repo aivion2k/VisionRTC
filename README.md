@@ -8,7 +8,7 @@ VisionRTC is an advanced server-side inference tool designed for testing and imp
 VisionRTC simplifies the process of implementing and testing computer vision methods and models. With minimal setup, you can quickly get your solutions up and running.
 
 ### Simple Configuration
-Configure VisionRTC easily through a user-friendly web interface. Full configuration via JSON will also be supported, offering flexibility and control over your setup.
+Configure VisionRTC easily through a user-friendly web interface. Full configuration via JSON is supported, offering flexibility and control over your setup.
 
 ### Dataset Management
 Save datasets with or without labels returned by various methods. This feature helps streamline your data processing workflow and ensures efficient management of your datasets.
@@ -63,7 +63,7 @@ python app.py
 
 
 ## Configuration
-Access the web interface via your browser to configure VisionRTC. Navigate to **https://127.0.0.1:8080/** and use the UI to choose the camera source, resolution and desired method. JSON configuration will be supported soon for advanced users.
+Access the web interface via your browser to configure VisionRTC. Navigate to **https://127.0.0.1:8080/** and use the UI to choose the camera source, resolution and desired method.
 
 ## License
 This project is licensed under the MIT License. See the LICENSE file for more details.
