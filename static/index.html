@@ -37,19 +37,8 @@
         <option value="" selected>Default device</option>
     </select>
     <select id="video-resolution">
-        <option value="" selected>Default resolution</option>
-        <option value="320x240">320x240</option>
-        <option value="640x480">640x480</option>
-        <option value="960x540">960x540</option>
-        <option value="1280x720">1280x720</option>
-        <option value="1920x1080">1920x1080</option>
     </select>
     <select id="video-transform">
-        <option value="none" selected>No transform</option>
-        <option value="edges">Edge detection</option>
-        <option value="cartoon">Cartoon effect</option>
-        <option value="rotate">Rotate</option>
-        <option value="detect-faces">Detect faces</option>
     </select>
     <label for="create-dataset">Create Dataset:</label>
     <input type="checkbox" id="create-dataset">
@@ -63,5 +52,36 @@
 </div>
 
 <script src="client.js"></script>
+<script>
+    // Load config.json and update the HTML form
+    document.addEventListener("DOMContentLoaded", function() {
+        fetch('/config')
+            .then(response => response.json())
+            .then(config => {
+                // Update video resolutions
+                const videoResolutionSelect = document.getElementById('video-resolution');
+                config.videoResolutions.forEach(resolution => {
+                    const option = document.createElement('option');
+                    option.value = resolution;
+                    option.textContent = resolution;
+                    videoResolutionSelect.appendChild(option);
+                });
+
+                // Update video transforms
+                const videoTransformSelect = document.getElementById('video-transform');
+                config.videoTransforms.forEach(transform => {
+                    const option = document.createElement('option');
+                    option.value = transform;
+                    option.textContent = transform.charAt(0).toUpperCase() + transform.slice(1);
+                    videoTransformSelect.appendChild(option);
+                });
+
+                // Set create dataset checkbox
+                const createDatasetCheckbox = document.getElementById('create-dataset');
+                createDatasetCheckbox.checked = config.createDataset;
+            })
+            .catch(error => console.error('Error loading config:', error));
+    });
+</script>
 </body>
 </html>
