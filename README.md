@@ -23,7 +23,7 @@ VisionRTC supports multiple connections and methods simultaneously, providing as
 
 ### Prerequisites
 
-To use VisionRTC, you need to generate OpenSSL keys. Follow the command below to generate the required keys:
+To use VisionRTC, you need to generate OpenSSL keys and paste them into certs folder. Follow the command below to generate the required keys:
 
 ```sh
 openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
@@ -58,7 +58,7 @@ pip install -r requirements.txt
 ```
 4. Run the application:
 ```
-python app.py
+python main.py
 ```
 
 
